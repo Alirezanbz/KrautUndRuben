@@ -9,7 +9,7 @@ public class DataBaseConnection {
 
         Connection connection = null;
 
-        String jdbcURL = "jdbc:mariadb://localhost:8080/DB?user=root&password=SamplePassword";
+        String jdbcURL = "jdbc:mariadb://localhost:3306/DB?user=root&password=Zenbook12";
 
         try {
             connection = DriverManager.getConnection(jdbcURL);

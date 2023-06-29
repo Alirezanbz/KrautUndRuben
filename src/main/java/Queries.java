@@ -21,8 +21,7 @@ public class Queries extends DataBaseConnection {
 
             while (selectResult.next()){
 
-                result = selectResult.getString("firstname");
-                result += " " + selectResult.getString("lastname");
+                result = selectResult.getString(columns);
             }
 
             selectStatement.close();

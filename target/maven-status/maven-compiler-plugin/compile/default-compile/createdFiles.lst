@@ -1,2 +1,6 @@
 HomePageStatements.class
+MySQLConnection.class
 Main.class
+MariaDBConnection.class
+MySQLStatements.class
+Queries.class

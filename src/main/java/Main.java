@@ -5,6 +5,6 @@ public class Main {
 
         // System.out.println(statements.getRezepts());
 
-        System.out.println(queries.selectQuery("email", "Kunden", "WHERE KdNr = ''"));
+        queries.selectQuery("bla", "bla", null);
     }
 }

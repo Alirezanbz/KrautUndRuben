@@ -10,8 +10,8 @@ public class MariaDBConnection {
         Connection connection = null;
 
         String jdbcURL = "jdbc:mariadb://172.16.5.15:3306/kraut_und_ruben_db";
-        String username = "admin";
-        String password = "admin";
+        String username = "itechpi";
+        String password = "itech2022";
 
         try {
             connection = DriverManager.getConnection(jdbcURL, username, password);

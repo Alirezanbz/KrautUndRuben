@@ -6,5 +6,9 @@ public class Main {
         Queries queries = new Queries();
 
         // System.out.println(statements.getRezepts());
+
+        System.out.println(queries.getZutatenNachRezept(6));
+        System.out.println(queries.getRezeptNachZutat(7));
+        System.out.println(queries.getZutatNachBeschraenkung(47));
     }
 }

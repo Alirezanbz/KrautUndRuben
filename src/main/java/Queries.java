@@ -246,6 +246,6 @@ public class Queries extends MariaDBConnection {
     }
 
     private Integer randomNrGenerator(){
-        return ThreadLocalRandom.current().nextInt(0,15 + 1);
+        return  ThreadLocalRandom.current().nextInt(0,15 + 1);
     }
 }

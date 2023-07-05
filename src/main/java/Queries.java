@@ -12,6 +12,8 @@ public class Queries extends MariaDBConnection {
 
         ArrayList<String> result = new ArrayList<>();
 
+        String[] columnsArray = columns.split(",");
+
         String selectQuery = "SELECT " + columns + " FROM " + table + " ";
 
         try{
@@ -27,8 +29,9 @@ public class Queries extends MariaDBConnection {
             ResultSet selectResult = selectStatement.executeQuery(selectQuery);
 
             while (selectResult.next()){
-
-                result.add(selectResult.getString(columns));
+                for (String col : columnsArray) {
+                    result.add(selectResult.getString(col));
+                }
             }
 
             selectStatement.close();

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Queries extends MySQLConnection {
+public class Queries extends MariaDBConnection {
 
     public ArrayList<String> selectStringQuery(String columns, String table, String whereClause) {
 
@@ -16,7 +16,7 @@ public class Queries extends MySQLConnection {
 
         String[] columnsArray = columns.split(",");
 
-        String selectQuery = "SELECT " + columns + " FROM " + table + " ";
+        String selectQuery = "SELECT " + columns + " FROM " + table;
 
         try{
 
@@ -25,7 +25,6 @@ public class Queries extends MySQLConnection {
             }
 
             selectQuery += ";";
-            System.out.println(selectQuery);
 
             Statement selectStatement = connection.createStatement();
             ResultSet selectResult = selectStatement.executeQuery(selectQuery);
@@ -84,7 +83,7 @@ public class Queries extends MySQLConnection {
         HashMap<String, Integer> zutatenMap = new HashMap<String, Integer>();
 
         ArrayList<String> zutatBezeichnungen = selectStringQuery(
-                "zutat.bezeichnung",
+                "zutat.bezeichnung,menge",
                 "rezept_zutat",
                 "LEFT JOIN zutat ON rezept_zutat.zutatNr = zutat.zutatNr WHERE rezept_zutat.RezeptNr = " + rezeptNr);
 
@@ -138,13 +137,13 @@ public class Queries extends MySQLConnection {
         }
     }
 
-    public void createOrder(String kdNr, Basket basket){
+    public void createOrder(Integer kdNr, Basket basket){
 
         String date = getDate();
         Integer lfNr = randomNrGenerator();
         Integer rechnungsBetrag = getTotalPrice(basket.rezepte, basket.zutaten);
 
-        String postValues = date + ", " + rechnungsBetrag + ", " + kdNr + ", " + lfNr;
+        String postValues = "'" + date + "', " + rechnungsBetrag + ", " + kdNr + ", " + lfNr;
 
         postQuery("datum, rechnungsbetrag, KdNr, LfNr", "Bestellung", postValues);
 
@@ -166,15 +165,19 @@ public class Queries extends MySQLConnection {
         }
     }
 
-    private int getLatestBestellungNr(String kdNr) {
+    private int getLatestBestellungNr(Integer kdNr) {
 
-        ArrayList<Integer> bestellungen = selectIntegerQuery("BestellNr", "bestellung", " WHERE KdNr = " + kdNr + " ORDER BY datum DESC;");
+        ArrayList<Integer> bestellungen = selectIntegerQuery("BestellNr", "bestellung", "WHERE KdNr = " + kdNr + " ORDER BY datum DESC");
         return bestellungen.get(0);
     }
 
     private Integer getTotalPrice(ArrayList<Integer> rezepte, ArrayList<Integer> zutaten) {
 
-        Integer totalPrice = getTotalRezeptePrice(rezepte);
+        Integer totalPrice = 0;
+
+        if (rezepte != null) {
+            totalPrice += getTotalRezeptePrice(rezepte);
+        }
 
         if (zutaten != null) {
             totalPrice += getTotalZutatenPrice(zutaten);

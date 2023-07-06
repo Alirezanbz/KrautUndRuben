@@ -5,12 +5,14 @@ public class Basket extends Queries{
     ArrayList<Integer> zutaten;
 
     public Basket() {
+        this.rezepte = new ArrayList<>();
+        this.zutaten = new ArrayList<>();
     }
 
     void addRezeptToBasket(Integer rezeptId){
-        rezepte.add(rezeptId);
+        this.rezepte.add(rezeptId);
     }
     void addZutatToBasket(Integer zutatId){
-        zutaten.add(zutatId);
+        this.zutaten.add(zutatId);
     }
 }

@@ -6,7 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-public class HomePageFrame extends MySQLStatements{
+public class HomePageFrame extends HomePageStatements{
 
 
     public void openHomePage(){
@@ -42,11 +42,7 @@ public class HomePageFrame extends MySQLStatements{
 
 
 
-        ArrayList<String> rezepts = getRezepts();
-        for (int i = 0; i < rezepts.size(); i ++) {
-            String[] row = {rezepts.get(i), "", ""};
-            model.addRow(row);
-        }
+
 
 
         RezeptsTable.addMouseListener(new MouseAdapter() {

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Queries extends MariaDBConnection {
+public class Queries extends MySQLConnection {
 
     public ArrayList<String> selectStringQuery(String columns, String table, String whereClause) {
 

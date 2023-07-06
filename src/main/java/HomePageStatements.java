@@ -1,2 +1,4 @@
-public class HomePageStatements {
+public class HomePageStatements extends Queries {
+
+
 }

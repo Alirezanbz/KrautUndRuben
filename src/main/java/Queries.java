@@ -10,13 +10,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Queries extends MariaDBConnection {
 
-    public ArrayList<String> selectStringQuery(String columns, String table, String whereClause) {
+    public ArrayList<ArrayList<String>> selectStringQuery(String columns, String table, String whereClause) {
 
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        //String[][] result;
 
         String[] columnsArray = columns.split(",");
 
-        String selectQuery = "SELECT " + columns + " FROM " + table;
+        String selectQuery = "SELECT " + columns.toString() + " FROM " + table + " ";
 
         try{
 
@@ -25,14 +26,17 @@ public class Queries extends MariaDBConnection {
             }
 
             selectQuery += ";";
+            System.out.println(selectQuery);
 
             Statement selectStatement = connection.createStatement();
             ResultSet selectResult = selectStatement.executeQuery(selectQuery);
 
             while (selectResult.next()){
+                ArrayList<String> values = new ArrayList<>();
                 for (String col : columnsArray) {
-                    result.add(selectResult.getString(col));
+                    values.add(selectResult.getString(col));
                 }
+                result.add(values);
             }
 
             selectStatement.close();
@@ -78,6 +82,7 @@ public class Queries extends MariaDBConnection {
         return result;
     }
 
+    /*
     public HashMap<String, Integer> getZutatenNachRezept(int rezeptNr) {
 
         HashMap<String, Integer> zutatenMap = new HashMap<String, Integer>();
@@ -98,22 +103,23 @@ public class Queries extends MariaDBConnection {
 
         return zutatenMap;
     }
+     */
 
-    public ArrayList<String> getRezeptNachZutat(int zutatNr) {
+    public ArrayList<ArrayList<String>> getRezeptNachZutat(int zutatNr) {
         return selectStringQuery(
                 "rezeptname",
                 "rezept",
                 "JOIN rezept_zutat rz on rezept.RezeptNr = rz.RezeptNr WHERE zutatNr = " + zutatNr);
     }
 
-    public ArrayList<String> getRezeptNachKategorie(int ernaehrungskategorieNr) {
+    public ArrayList<ArrayList<String>> getRezeptNachKategorie(int ernaehrungskategorieNr) {
         return selectStringQuery(
                 "rezeptname",
                 "rezept",
                 "JOIN rezept_kategorie rk on rk.RezeptNr = rezept.RezeptNr WHERE KatNr = " + ernaehrungskategorieNr);
     }
 
-    public ArrayList<String> getZutatNachBeschraenkung(int beschraenkungNr) {
+    public ArrayList<ArrayList<String>> getZutatNachBeschraenkung(int beschraenkungNr) {
         return selectStringQuery(
                 "z.bezeichnung",
                 "beschraenkung_zutat",

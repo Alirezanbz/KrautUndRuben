@@ -10,14 +10,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Queries extends MySQLConnection {
 
-    public ArrayList<ArrayList<String>> selectStringQuery(String[] columns, String table, String whereClause) {
+    public ArrayList<ArrayList<String>> selectStringQuery(String columns, String table, String whereClause) {
 
         ArrayList<ArrayList<String>> result = new ArrayList<>();
         //String[][] result;
 
-        //String[] columnsArray = columns.split(",");
+        String[] columnsArray = columns.split(",");
 
-        String selectQuery = "SELECT " + columns + " FROM " + table + " ";
+        String selectQuery = "SELECT " + columns.toString() + " FROM " + table + " ";
 
         try{
 
@@ -33,7 +33,7 @@ public class Queries extends MySQLConnection {
 
             while (selectResult.next()){
                 ArrayList<String> values = new ArrayList<>();
-                for (String col : columns) {
+                for (String col : columnsArray) {
                     values.add(selectResult.getString(col));
                 }
                 result.add(values);
@@ -47,10 +47,6 @@ public class Queries extends MySQLConnection {
         }
 
         return result;
-    }
-
-    public ArrayList<ArrayList<String>> selectStringQuery(String columns, String table, String whereClause) {
-        return selectStringQuery(columns.split(","), table, whereClause);
     }
 
     public ArrayList<Integer> selectIntegerQuery(String columns, String table, String whereClause) {

@@ -35,6 +35,13 @@ public class HomePageFrame extends HomePageStatements{
                 "GROUP BY rezept.RezeptNr");
 
         System.out.println(records);
+        String name="",kategorie="",preis="";
+        for (ArrayList<String> record : records) {
+            name = record.get(0);
+            kategorie = record.get(1);
+            preis = record.get(2);
+            model.addRow(new Object[]{name,kategorie,preis});
+        }
 
         JTable RezeptsTable = new JTable(model);
 

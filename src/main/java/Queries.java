@@ -140,6 +140,7 @@ public class Queries extends MariaDBConnection {
 
         } catch (Exception exception) {
             System.err.println("Couldn't run POST query: " + exception.getMessage());
+            System.err.println(exception);
         }
     }
 
@@ -157,27 +158,27 @@ public class Queries extends MariaDBConnection {
         zutat_Bestellung(getLatestBestellungNr(kdNr), basket.zutaten);
     }
 
-    private void rezept_Bestellung(int latestBestellungNr, ArrayList<Integer> rezepte) {
+    private void rezept_Bestellung(int latestBestellungNr, ArrayList<ArrayList<Integer>> rezepte) {
 
-        for (int rezeptNr : rezepte) {
-            postQuery("BestellNr, RezeptNr", "rezept_bestellung", latestBestellungNr + ", " + rezeptNr);
+        for (ArrayList<Integer> rezept : rezepte) {
+            postQuery("BestellNr,RezeptNr,menge", "rezept_bestellung", latestBestellungNr + ", " + rezept.get(0) + ", " + rezept.get(1));
         }
     }
 
-    private void zutat_Bestellung(int latestBestellungNr, ArrayList<Integer> zutaten) {
+    private void zutat_Bestellung(int latestBestellungNr, ArrayList<ArrayList<Integer>> zutaten) {
 
-        for (int zutatNr : zutaten) {
-            postQuery("BestellNr, ZutatNr", "zutat_bestellung", latestBestellungNr + ", " + zutatNr);
+        for (ArrayList<Integer> zutat : zutaten) {
+            postQuery("BestellNr,ZutatNr,menge", "zutat_bestellung", latestBestellungNr + ", " + zutat.get(0) + ", " + zutat.get(1));
         }
     }
 
     private int getLatestBestellungNr(Integer kdNr) {
 
-        ArrayList<Integer> bestellungen = selectIntegerQuery("BestellNr", "bestellung", "WHERE KdNr = " + kdNr + " ORDER BY datum DESC");
+        ArrayList<Integer> bestellungen = selectIntegerQuery("BestellNr", "bestellung", "WHERE KdNr = " + kdNr + " ORDER BY BestellNr DESC");
         return bestellungen.get(0);
     }
 
-    private Integer getTotalPrice(ArrayList<Integer> rezepte, ArrayList<Integer> zutaten) {
+    private Integer getTotalPrice(ArrayList<ArrayList<Integer>> rezepte, ArrayList<ArrayList<Integer>> zutaten) {
 
         Integer totalPrice = 0;
 
@@ -192,15 +193,15 @@ public class Queries extends MariaDBConnection {
         return totalPrice;
     }
 
-    private Integer getTotalZutatenPrice(ArrayList<Integer> zutaten) {
+    private Integer getTotalZutatenPrice(ArrayList<ArrayList<Integer>> zutaten) {
 
         Integer zutatenPrice = 0;
 
-        for (int zutatNr : zutaten) {
+        for (ArrayList<Integer> zutat : zutaten) {
 
             String getPriceQuery = "SELECT preis " +
                     "FROM Zutat " +
-                    "WHERE zutatNr = " + zutatNr;
+                    "WHERE zutatNr = " + zutat.get(0);
 
             System.out.println(getPriceQuery);
 
@@ -209,7 +210,7 @@ public class Queries extends MariaDBConnection {
                 ResultSet getPriceResult = getPriceStatement.executeQuery(getPriceQuery);
 
                 while (getPriceResult.next()) {
-                    zutatenPrice += getPriceResult.getInt("preis");
+                    zutatenPrice += getPriceResult.getInt("preis") * zutat.get(1);
                 }
 
             } catch (Exception exception) {
@@ -220,16 +221,16 @@ public class Queries extends MariaDBConnection {
         return zutatenPrice;
     }
 
-    private Integer getTotalRezeptePrice(ArrayList<Integer> rezepte) {
+    private Integer getTotalRezeptePrice(ArrayList<ArrayList<Integer>> rezepte) {
 
         Integer rezeptPrice = 0;
 
-        for (int rezeptNr : rezepte) {
+        for (ArrayList<Integer> rezept : rezepte) {
 
             String getPriceQuery = "SELECT SUM(preis * menge) " +
                     "FROM Zutat " +
                     "INNER JOIN Rezept_Zutat ON Rezept_Zutat.zutatNr = Zutat.zutatNr " +
-                    "WHERE RezeptNr = " + rezeptNr;
+                    "WHERE RezeptNr = " + rezept.get(0);
 
             System.out.println(getPriceQuery);
 
@@ -238,7 +239,7 @@ public class Queries extends MariaDBConnection {
                 ResultSet getPriceResult = getPriceStatement.executeQuery(getPriceQuery);
 
                 while (getPriceResult.next()) {
-                    rezeptPrice += getPriceResult.getInt("SUM(preis * menge)");
+                    rezeptPrice += getPriceResult.getInt("SUM(preis * menge)") * rezept.get(1);
                 }
 
             } catch (Exception exception) {

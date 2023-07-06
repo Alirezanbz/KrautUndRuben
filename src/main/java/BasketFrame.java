@@ -20,14 +20,14 @@ public class BasketFrame extends JFrame {
         basketTable = new JTable(tableModel);
 
         if (basket.rezepte != null) {
-            for (int i : basket.rezepte){
-                tableModel.addRow(queries.selectStringQuery("rezeptname", "rezept", "WHERE RezeptNr = " + i).toArray());
+            for (ArrayList<Integer> rezept : basket.rezepte){
+                tableModel.addRow(new Object[]{queries.selectStringQuery("rezeptname", "rezept", "WHERE RezeptNr = " + rezept.get(0)).get(0).get(0), rezept.get(1)});
             }
         }
 
         if (basket.zutaten != null) {
-            for (int i : basket.zutaten){
-                tableModel.addRow(queries.selectStringQuery("bezeichnung", "zutat", "WHERE zutatNr = " + i).toArray());
+            for (ArrayList<Integer> zutat : basket.zutaten){
+                tableModel.addRow(new Object[] {queries.selectStringQuery("bezeichnung", "zutat", "WHERE zutatNr = " + zutat.get(0)).get(0).get(0), zutat.get(1)});
             }
         }
 

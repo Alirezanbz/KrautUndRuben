@@ -10,11 +10,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Queries extends MySQLConnection {
 
-    public ArrayList<String> selectStringQuery(String columns, String table, String whereClause) {
+    public ArrayList<ArrayList<String>> selectStringQuery(String[] columns, String table, String whereClause) {
 
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        //String[][] result;
 
-        String[] columnsArray = columns.split(",");
+        //String[] columnsArray = columns.split(",");
 
         String selectQuery = "SELECT " + columns + " FROM " + table + " ";
 
@@ -31,9 +32,11 @@ public class Queries extends MySQLConnection {
             ResultSet selectResult = selectStatement.executeQuery(selectQuery);
 
             while (selectResult.next()){
-                for (String col : columnsArray) {
-                    result.add(selectResult.getString(col));
+                ArrayList<String> values = new ArrayList<>();
+                for (String col : columns) {
+                    values.add(selectResult.getString(col));
                 }
+                result.add(values);
             }
 
             selectStatement.close();
@@ -44,6 +47,10 @@ public class Queries extends MySQLConnection {
         }
 
         return result;
+    }
+
+    public ArrayList<ArrayList<String>> selectStringQuery(String columns, String table, String whereClause) {
+        return selectStringQuery(columns.split(","), table, whereClause);
     }
 
     public ArrayList<Integer> selectIntegerQuery(String columns, String table, String whereClause) {
@@ -79,6 +86,7 @@ public class Queries extends MySQLConnection {
         return result;
     }
 
+    /*
     public HashMap<String, Integer> getZutatenNachRezept(int rezeptNr) {
 
         HashMap<String, Integer> zutatenMap = new HashMap<String, Integer>();
@@ -99,22 +107,23 @@ public class Queries extends MySQLConnection {
 
         return zutatenMap;
     }
+     */
 
-    public ArrayList<String> getRezeptNachZutat(int zutatNr) {
+    public ArrayList<ArrayList<String>> getRezeptNachZutat(int zutatNr) {
         return selectStringQuery(
                 "rezeptname",
                 "rezept",
                 "JOIN rezept_zutat rz on rezept.RezeptNr = rz.RezeptNr WHERE zutatNr = " + zutatNr);
     }
 
-    public ArrayList<String> getRezeptNachKategorie(int ernaehrungskategorieNr) {
+    public ArrayList<ArrayList<String>> getRezeptNachKategorie(int ernaehrungskategorieNr) {
         return selectStringQuery(
                 "rezeptname",
                 "rezept",
                 "JOIN rezept_kategorie rk on rk.RezeptNr = rezept.RezeptNr WHERE KatNr = " + ernaehrungskategorieNr);
     }
 
-    public ArrayList<String> getZutatNachBeschraenkung(int beschraenkungNr) {
+    public ArrayList<ArrayList<String>> getZutatNachBeschraenkung(int beschraenkungNr) {
         return selectStringQuery(
                 "z.bezeichnung",
                 "beschraenkung_zutat",

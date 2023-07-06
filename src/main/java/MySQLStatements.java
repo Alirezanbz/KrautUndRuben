@@ -6,6 +6,8 @@ public class MySQLStatements extends MySQLConnection{
 
     String rezeptTable = "rezept";
 
+    String kategorieTable = "ernaehrungskategorie";
+
 
 
 public ArrayList<String> getRezepts(){
@@ -29,6 +31,8 @@ public ArrayList<String> getRezepts(){
 
 
 
+
+
     }catch (Exception e){
         System.out.println(e.getMessage());
 
@@ -37,6 +41,8 @@ public ArrayList<String> getRezepts(){
 
 
 }
+
+
 
 
 }

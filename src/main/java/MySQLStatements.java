@@ -16,7 +16,8 @@ public ArrayList<String> getRezepts(){
 
     try {
 
-        String retrieveRezeptsQuery ="SELECT * FROM " + rezeptTable;
+        /*
+        String retrieveRezeptsQuery = "SELECT * FROM " + rezeptTable;
         Statement retrieveRezeptsStatement = connection.createStatement();
         ResultSet retrieveRezeptsresult =retrieveRezeptsStatement.executeQuery(retrieveRezeptsQuery);
 
@@ -27,6 +28,10 @@ public ArrayList<String> getRezepts(){
 
 
         }
+        */
+
+        Queries queries = new Queries();
+        rezepts = queries.selectQuery("rezeptname,RezeptNr", rezeptTable, "");
 
 
 

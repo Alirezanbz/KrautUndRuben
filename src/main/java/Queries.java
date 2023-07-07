@@ -8,15 +8,16 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Queries extends MySQLConnection {
+public class Queries extends MariaDBConnection {
 
-    public ArrayList<String> selectStringQuery(String columns, String table, String whereClause) {
+    public ArrayList<ArrayList<String>> selectStringQuery(String columns, String table, String whereClause) {
 
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        //String[][] result;
 
         String[] columnsArray = columns.split(",");
 
-        String selectQuery = "SELECT " + columns + " FROM " + table + " ";
+        String selectQuery = "SELECT " + columns.toString() + " FROM " + table + " ";
 
         try{
 
@@ -31,9 +32,11 @@ public class Queries extends MySQLConnection {
             ResultSet selectResult = selectStatement.executeQuery(selectQuery);
 
             while (selectResult.next()){
+                ArrayList<String> values = new ArrayList<>();
                 for (String col : columnsArray) {
-                    result.add(selectResult.getString(col));
+                    values.add(selectResult.getString(col));
                 }
+                result.add(values);
             }
 
             selectStatement.close();
@@ -79,12 +82,13 @@ public class Queries extends MySQLConnection {
         return result;
     }
 
+    /*
     public HashMap<String, Integer> getZutatenNachRezept(int rezeptNr) {
 
         HashMap<String, Integer> zutatenMap = new HashMap<String, Integer>();
 
         ArrayList<String> zutatBezeichnungen = selectStringQuery(
-                "zutat.bezeichnung",
+                "zutat.bezeichnung,menge",
                 "rezept_zutat",
                 "LEFT JOIN zutat ON rezept_zutat.zutatNr = zutat.zutatNr WHERE rezept_zutat.RezeptNr = " + rezeptNr);
 
@@ -99,22 +103,23 @@ public class Queries extends MySQLConnection {
 
         return zutatenMap;
     }
+     */
 
-    public ArrayList<String> getRezeptNachZutat(int zutatNr) {
+    public ArrayList<ArrayList<String>> getRezeptNachZutat(int zutatNr) {
         return selectStringQuery(
                 "rezeptname",
                 "rezept",
                 "JOIN rezept_zutat rz on rezept.RezeptNr = rz.RezeptNr WHERE zutatNr = " + zutatNr);
     }
 
-    public ArrayList<String> getRezeptNachKategorie(int ernaehrungskategorieNr) {
+    public ArrayList<ArrayList<String>> getRezeptNachKategorie(int ernaehrungskategorieNr) {
         return selectStringQuery(
                 "rezeptname",
                 "rezept",
                 "JOIN rezept_kategorie rk on rk.RezeptNr = rezept.RezeptNr WHERE KatNr = " + ernaehrungskategorieNr);
     }
 
-    public ArrayList<String> getZutatNachBeschraenkung(int beschraenkungNr) {
+    public ArrayList<ArrayList<String>> getZutatNachBeschraenkung(int beschraenkungNr) {
         return selectStringQuery(
                 "z.bezeichnung",
                 "beschraenkung_zutat",
@@ -135,16 +140,17 @@ public class Queries extends MySQLConnection {
 
         } catch (Exception exception) {
             System.err.println("Couldn't run POST query: " + exception.getMessage());
+            System.err.println(exception);
         }
     }
 
-    public void createOrder(String kdNr, Basket basket){
+    public void createOrder(Integer kdNr, Basket basket){
 
         String date = getDate();
         Integer lfNr = randomNrGenerator();
         Integer rechnungsBetrag = getTotalPrice(basket.rezepte, basket.zutaten);
 
-        String postValues = date + ", " + rechnungsBetrag + ", " + kdNr + ", " + lfNr;
+        String postValues = "'" + date + "', " + rechnungsBetrag + ", " + kdNr + ", " + lfNr;
 
         postQuery("datum, rechnungsbetrag, KdNr, LfNr", "Bestellung", postValues);
 
@@ -152,29 +158,33 @@ public class Queries extends MySQLConnection {
         zutat_Bestellung(getLatestBestellungNr(kdNr), basket.zutaten);
     }
 
-    private void rezept_Bestellung(int latestBestellungNr, ArrayList<Integer> rezepte) {
+    private void rezept_Bestellung(int latestBestellungNr, ArrayList<ArrayList<Integer>> rezepte) {
 
-        for (int rezeptNr : rezepte) {
-            postQuery("BestellNr, RezeptNr", "rezept_bestellung", latestBestellungNr + ", " + rezeptNr);
+        for (ArrayList<Integer> rezept : rezepte) {
+            postQuery("BestellNr,RezeptNr,menge", "rezept_bestellung", latestBestellungNr + ", " + rezept.get(0) + ", " + rezept.get(1));
         }
     }
 
-    private void zutat_Bestellung(int latestBestellungNr, ArrayList<Integer> zutaten) {
+    private void zutat_Bestellung(int latestBestellungNr, ArrayList<ArrayList<Integer>> zutaten) {
 
-        for (int zutatNr : zutaten) {
-            postQuery("BestellNr, ZutatNr", "zutat_bestellung", latestBestellungNr + ", " + zutatNr);
+        for (ArrayList<Integer> zutat : zutaten) {
+            postQuery("BestellNr,ZutatNr,menge", "zutat_bestellung", latestBestellungNr + ", " + zutat.get(0) + ", " + zutat.get(1));
         }
     }
 
-    private int getLatestBestellungNr(String kdNr) {
+    private int getLatestBestellungNr(Integer kdNr) {
 
-        ArrayList<Integer> bestellungen = selectIntegerQuery("BestellNr", "bestellung", " WHERE KdNr = " + kdNr + " ORDER BY datum DESC;");
+        ArrayList<Integer> bestellungen = selectIntegerQuery("BestellNr", "bestellung", "WHERE KdNr = " + kdNr + " ORDER BY BestellNr DESC");
         return bestellungen.get(0);
     }
 
-    private Integer getTotalPrice(ArrayList<Integer> rezepte, ArrayList<Integer> zutaten) {
+    private Integer getTotalPrice(ArrayList<ArrayList<Integer>> rezepte, ArrayList<ArrayList<Integer>> zutaten) {
 
-        Integer totalPrice = getTotalRezeptePrice(rezepte);
+        Integer totalPrice = 0;
+
+        if (rezepte != null) {
+            totalPrice += getTotalRezeptePrice(rezepte);
+        }
 
         if (zutaten != null) {
             totalPrice += getTotalZutatenPrice(zutaten);
@@ -183,15 +193,15 @@ public class Queries extends MySQLConnection {
         return totalPrice;
     }
 
-    private Integer getTotalZutatenPrice(ArrayList<Integer> zutaten) {
+    private Integer getTotalZutatenPrice(ArrayList<ArrayList<Integer>> zutaten) {
 
         Integer zutatenPrice = 0;
 
-        for (int zutatNr : zutaten) {
+        for (ArrayList<Integer> zutat : zutaten) {
 
             String getPriceQuery = "SELECT preis " +
                     "FROM Zutat " +
-                    "WHERE zutatNr = " + zutatNr;
+                    "WHERE zutatNr = " + zutat.get(0);
 
             System.out.println(getPriceQuery);
 
@@ -200,7 +210,7 @@ public class Queries extends MySQLConnection {
                 ResultSet getPriceResult = getPriceStatement.executeQuery(getPriceQuery);
 
                 while (getPriceResult.next()) {
-                    zutatenPrice += getPriceResult.getInt("preis");
+                    zutatenPrice += getPriceResult.getInt("preis") * zutat.get(1);
                 }
 
             } catch (Exception exception) {
@@ -211,16 +221,16 @@ public class Queries extends MySQLConnection {
         return zutatenPrice;
     }
 
-    private Integer getTotalRezeptePrice(ArrayList<Integer> rezepte) {
+    private Integer getTotalRezeptePrice(ArrayList<ArrayList<Integer>> rezepte) {
 
         Integer rezeptPrice = 0;
 
-        for (int rezeptNr : rezepte) {
+        for (ArrayList<Integer> rezept : rezepte) {
 
             String getPriceQuery = "SELECT SUM(preis * menge) " +
                     "FROM Zutat " +
                     "INNER JOIN Rezept_Zutat ON Rezept_Zutat.zutatNr = Zutat.zutatNr " +
-                    "WHERE RezeptNr = " + rezeptNr;
+                    "WHERE RezeptNr = " + rezept.get(0);
 
             System.out.println(getPriceQuery);
 
@@ -229,7 +239,7 @@ public class Queries extends MySQLConnection {
                 ResultSet getPriceResult = getPriceStatement.executeQuery(getPriceQuery);
 
                 while (getPriceResult.next()) {
-                    rezeptPrice += getPriceResult.getInt("SUM(preis * menge)");
+                    rezeptPrice += getPriceResult.getInt("SUM(preis * menge)") * rezept.get(1);
                 }
 
             } catch (Exception exception) {

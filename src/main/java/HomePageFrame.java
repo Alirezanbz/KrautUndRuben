@@ -4,6 +4,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class HomePageFrame extends HomePageStatements{
@@ -26,6 +27,21 @@ public class HomePageFrame extends HomePageStatements{
                 return false;
             }
         };
+
+        ArrayList<ArrayList<String>> records = selectStringQuery("rezeptname,kategoriename,sum(preis*menge)", "rezept", "LEFT JOIN rezept_kategorie ON rezept.RezeptNr = rezept_kategorie.RezeptNr\n" +
+                "LEFT JOIN ernaehrungskategorie ON rezept_kategorie.KatNr = ernaehrungskategorie.KatNr\n" +
+                "LEFT JOIN rezept_zutat ON rezept.RezeptNr = rezept_zutat.RezeptNr\n" +
+                "LEFT JOIN zutat ON rezept_zutat.zutatNr = zutat.zutatNr\n" +
+                "GROUP BY rezept.RezeptNr");
+
+        System.out.println(records);
+        String name="",kategorie="",preis="";
+        for (ArrayList<String> record : records) {
+            name = record.get(0);
+            kategorie = record.get(1);
+            preis = record.get(2);
+            model.addRow(new Object[]{name,kategorie,preis});
+        }
 
         JTable RezeptsTable = new JTable(model);
 

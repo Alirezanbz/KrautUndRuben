@@ -113,6 +113,14 @@ public class Queries extends MySQLConnection {
                 "rezept",
                 "JOIN rezept_kategorie rk on rk.RezeptNr = rezept.RezeptNr WHERE KatNr = " + ernaehrungskategorieNr);
     }
+    public String getKategorieNachRezept(int rezeptNr) {
+        ArrayList<String> categories = selectStringQuery(
+                "kategoriename",
+                "ernaehrungskategorie",
+                "JOIN rezept_kategorie rk on rk.KatNr = ernaehrungskategorie.KatNr WHERE RezeptNr = " + rezeptNr);
+
+        return String.join(", ", categories);
+    };
 
     public ArrayList<String> getZutatNachBeschraenkung(int beschraenkungNr) {
         return selectStringQuery(
@@ -138,7 +146,7 @@ public class Queries extends MySQLConnection {
         }
     }
 
-    public void createOrder(String kdNr, Basket basket){
+  /*  public void createOrder(String kdNr, Basket basket){
 
         String date = getDate();
         Integer lfNr = randomNrGenerator();
@@ -150,7 +158,7 @@ public class Queries extends MySQLConnection {
 
         rezept_Bestellung(getLatestBestellungNr(kdNr), basket.rezepte);
         zutat_Bestellung(getLatestBestellungNr(kdNr), basket.zutaten);
-    }
+    }*/
 
     private void rezept_Bestellung(int latestBestellungNr, ArrayList<Integer> rezepte) {
 
@@ -172,7 +180,7 @@ public class Queries extends MySQLConnection {
         return bestellungen.get(0);
     }
 
-    private Integer getTotalPrice(ArrayList<Integer> rezepte, ArrayList<Integer> zutaten) {
+   /* private Integer getTotalPrice(ArrayList<Integer> rezepte, ArrayList<Integer> zutaten) {
 
         Integer totalPrice = getTotalRezeptePrice(rezepte);
 
@@ -190,7 +198,7 @@ public class Queries extends MySQLConnection {
         for (int zutatNr : zutaten) {
 
             String getPriceQuery = "SELECT preis " +
-                    "FROM Zutat " +
+                    "FROM zutat " +
                     "WHERE zutatNr = " + zutatNr;
 
             System.out.println(getPriceQuery);
@@ -218,8 +226,8 @@ public class Queries extends MySQLConnection {
         for (int rezeptNr : rezepte) {
 
             String getPriceQuery = "SELECT SUM(preis * menge) " +
-                    "FROM Zutat " +
-                    "INNER JOIN Rezept_Zutat ON Rezept_Zutat.zutatNr = Zutat.zutatNr " +
+                    "FROM zutat " +
+                    "INNER JOIN rezept_zutat ON rezept_Zutat.zutatNr = zutat.zutatNr " +
                     "WHERE RezeptNr = " + rezeptNr;
 
             System.out.println(getPriceQuery);
@@ -238,7 +246,7 @@ public class Queries extends MySQLConnection {
         }
 
         return rezeptPrice;
-    }
+    }*/
 
     private String getDate(){
         LocalDate currentDate = LocalDate.now();

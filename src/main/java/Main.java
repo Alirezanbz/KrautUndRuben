@@ -5,7 +5,8 @@ public class Main {
 
         HomePageFrame homePageFrame = new HomePageFrame();
         homePageFrame.openHomePage();
-
+        HomePageStatements homePageStatements = new HomePageStatements();
+        System.out.println(homePageStatements.getKategories());
 
 
         //System.out.println(queries.selectQuery("nachname", "kunden", "where kunden.kdnr = 1001"));

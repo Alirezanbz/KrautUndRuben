@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomePageFrame extends HomePageStatements{
 
@@ -40,8 +41,13 @@ public class HomePageFrame extends HomePageStatements{
         scrollPane.setBounds(10, 150, 460, 400);
         scrollPane.setBackground(new Color(79, 94, 92));
 
-
-
+        List<String[]> rows = getRezepts();
+        ArrayList<String> kategories = getKategories();
+        for(int i = 0; i < rows.size(); i++){
+            String[] row = rows.get(i);
+            row[1] = kategories.get(i); // Here we're setting the category for each recipe
+            model.addRow(row);
+        }
 
 
 

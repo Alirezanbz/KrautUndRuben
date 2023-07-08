@@ -146,7 +146,7 @@ public class Queries extends MySQLConnection {
         }
     }
 
-  /*  public void createOrder(String kdNr, Basket basket){
+   public void createOrder(String kdNr, Basket basket){
 
         String date = getDate();
         Integer lfNr = randomNrGenerator();
@@ -158,7 +158,7 @@ public class Queries extends MySQLConnection {
 
         rezept_Bestellung(getLatestBestellungNr(kdNr), basket.rezepte);
         zutat_Bestellung(getLatestBestellungNr(kdNr), basket.zutaten);
-    }*/
+    }
 
     private void rezept_Bestellung(int latestBestellungNr, ArrayList<Integer> rezepte) {
 
@@ -180,7 +180,7 @@ public class Queries extends MySQLConnection {
         return bestellungen.get(0);
     }
 
-   /* private Integer getTotalPrice(ArrayList<Integer> rezepte, ArrayList<Integer> zutaten) {
+    private Integer getTotalPrice(ArrayList<Integer> rezepte, ArrayList<Integer> zutaten) {
 
         Integer totalPrice = getTotalRezeptePrice(rezepte);
 
@@ -246,7 +246,7 @@ public class Queries extends MySQLConnection {
         }
 
         return rezeptPrice;
-    }*/
+    }
 
     private String getDate(){
         LocalDate currentDate = LocalDate.now();

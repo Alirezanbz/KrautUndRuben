@@ -1,12 +1,14 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class HomePageFrame extends HomePageStatements {
 
@@ -75,8 +77,8 @@ public class HomePageFrame extends HomePageStatements {
         JPanel checkBoxPanel = new JPanel();
         checkBoxPanel.setLayout(new GridLayout(2, 3));
         checkBoxPanel.setBackground(new Color(79, 94, 92));
-        List<String> constraints = getBeschraenkungs();
-        for (String constraint : constraints) {
+        Set<String> uniqueConstraints = new HashSet<>(getBeschraenkungs());
+        for (String constraint : uniqueConstraints) {
             JCheckBox checkBox = new JCheckBox(constraint);
             checkBox.setForeground(new Color(197, 235, 230));
             checkBox.setBackground(new Color(79, 94, 92));
@@ -90,7 +92,30 @@ public class HomePageFrame extends HomePageStatements {
             });
             checkBoxPanel.add(checkBox);
         }
+
         topPanel.add(checkBoxPanel, BorderLayout.CENTER);
+
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new BorderLayout());
+        searchPanel.setBackground(new Color(79, 94, 92));
+
+        JLabel searchLabel = new JLabel("Suche:");
+        searchLabel.setForeground(new Color(197, 235, 230));
+        searchLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        searchPanel.add(searchLabel, BorderLayout.WEST);
+
+        JTextField searchField = new JTextField(15);
+        searchField.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                String val = searchField.getText();
+                TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(model);
+                RezeptsTable.setRowSorter(rowSorter);
+                rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + val));
+            }
+        });
+        searchPanel.add(searchField, BorderLayout.CENTER);
+
+        topPanel.add(searchPanel, BorderLayout.SOUTH);
 
         JPanel tableTitlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         tableTitlePanel.setBackground(new Color(79, 94, 92));

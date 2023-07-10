@@ -43,7 +43,7 @@ public class HomePageStatements extends Queries {
 
     protected boolean isRecipeRestricted(String recipe, String beschraenkung) {
         ArrayList<Integer> beschraenkungNrs = selectIntegerQuery("beschraenkungNr", "beschraenkung", "WHERE beschraenkungsname = '" + beschraenkung + "'");
-        ArrayList<Integer> zutatNrs = selectIntegerQuery("zutatNr", "beschraenkung_zutat", "WHERE beschraenkungNr = " + beschraenkungNrs.get(0));
+        ArrayList<Integer> zutatNrs = selectIntegerQuery("zutatNr", "beschraenkung_zutat", "WHERE Allnr = " + beschraenkungNrs.get(0));
         for (Integer zutatNr : zutatNrs) {
             ArrayList<String> recipes = getRezeptNachZutat(zutatNr);
             if (recipes.contains(recipe)) {

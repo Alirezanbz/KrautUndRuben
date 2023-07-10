@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
@@ -56,14 +58,14 @@ public class HomePageFrame extends HomePageStatements {
                 "GROUP BY rezept.RezeptNr");
 
         System.out.println(records);
-        String name="",kategorie="",preis="",nr="";
+        String name = "", kategorie = "", preis = "", nr = "";
 
         for (ArrayList<String> record : records) {
             name = record.get(0);
             kategorie = record.get(1);
             preis = record.get(2);
             nr = record.get(3);
-            model.addRow(new Object[]{name,kategorie,preis,nr});
+            model.addRow(new Object[]{name, kategorie, preis, nr});
         }
 
         JButton nextButton = new JButton("Weiter");
@@ -166,7 +168,7 @@ public class HomePageFrame extends HomePageStatements {
                     String rezeptName = (String) target.getValueAt(row, 3);
                     RezeptDetailsPageFrame rezeptDetailsPageFrame = new RezeptDetailsPageFrame();
                     //rezeptDetailsPageFrame.openRezeptDetailsFrame(rezeptName);
-                    basket.addRezeptToBasket(Integer.parseInt((String)target.getValueAt(row, 3)), (Integer) mengeField.getValue());
+                    basket.addRezeptToBasket(Integer.parseInt((String) target.getValueAt(row, 3)), (Integer) mengeField.getValue());
 
                 }
                 ArrayList<ArrayList<String>> zRecords = selectStringQuery("bezeichnung,menge,sum(preis*menge),kalorien", "rezept_zutat", "LEFT JOIN zutat ON zutat.zutatNr = rezept_zutat.zutatNr\n" +
@@ -174,23 +176,44 @@ public class HomePageFrame extends HomePageStatements {
                         "GROUP BY zutat.ZutatNr");
 
                 System.out.println(zRecords);
-                while(zModel.getRowCount()>0) zModel.removeRow(0);
-                String name = "",menge="",preis = "";
+                while (zModel.getRowCount() > 0) zModel.removeRow(0);
+                String name = "", menge = "", preis = "";
                 for (ArrayList<String> record : zRecords) {
                     name = record.get(0);
                     menge = record.get(1);
                     preis = record.get(2);
-                    zModel.addRow(new Object[]{name,menge,preis});
+                    zModel.addRow(new Object[]{name, menge, preis});
                 }
             }
         });
+
+        /*
+        // Add action listener to each row
+        ListSelectionModel selectionModel = RezeptsTable.getSelectionModel();
+        selectionModel.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int selectedRow = RezeptsTable.getSelectedRow();
+                    JTable target = (JTable) e.getSource();
+                    if (selectedRow != -1) {
+                        // Handle row selection event here
+                        // Add your action here
+                        basket.addZutatToBasket(Integer.parseInt((String) target.getValueAt(selectedRow, 3)), (Integer) mengeField.getValue());
+                        System.out.println("Row " + selectedRow + " selected");
+                        System.out.println(basket.zutaten);
+                    }
+                }
+            }
+        });
+         */
+
         nextButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                BasketFrame basketFrame = new BasketFrame(Integer.parseInt(kdnr), basket);
+                ZutatenFrame zutatenFrame = new ZutatenFrame(Integer.parseInt(kdnr), basket);
             }
         });
-
 
 
         RezeptsTable.setBackground(new Color(79, 94, 92));
@@ -226,7 +249,7 @@ public class HomePageFrame extends HomePageStatements {
         gbc.gridy = 1;
         frame.add(mengeField, gbc);
 
-        frame.setSize(1200,700);
+        frame.setSize(1200, 700);
         frame.getContentPane().setBackground(new Color(79, 94, 92));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -234,7 +257,6 @@ public class HomePageFrame extends HomePageStatements {
 
         frame.pack();
     }
-
 
 
 }

@@ -10,15 +10,33 @@ public class Basket extends Queries{
     }
 
     void addRezeptToBasket(Integer rezeptId, Integer menge){
-        ArrayList<Integer> rezept = new ArrayList<>();
-        rezept.add(rezeptId);
-        rezept.add(menge);
-        this.rezepte.add(rezept);
+        Boolean duplicate = false;
+        ArrayList<Integer> newRezept = new ArrayList<>();
+        for(ArrayList<Integer> rezept : this.rezepte){
+            if (rezeptId == rezept.get(0)) {
+                duplicate = true;
+                rezept.set(1, rezept.get(1) + menge);
+            }
+        }
+        if (!duplicate) {
+            newRezept.add(rezeptId);
+            newRezept.add(menge);
+            this.rezepte.add(newRezept);
+        }
     }
     void addZutatToBasket(Integer zutatId, Integer menge){
-        ArrayList<Integer> zutat = new ArrayList<>();
-        zutat.add(zutatId);
-        zutat.add(menge);
-        this.zutaten.add(zutat);
+        Boolean duplicate = false;
+        ArrayList<Integer> newZutat = new ArrayList<>();
+        for(ArrayList<Integer> zutat : this.zutaten){
+            if (zutatId == zutat.get(0)) {
+                duplicate = true;
+                zutat.set(1, zutat.get(1) + menge);
+            }
+        }
+        if (!duplicate) {
+            newZutat.add(zutatId);
+            newZutat.add(menge);
+            this.zutaten.add(newZutat);
+        }
     }
 }

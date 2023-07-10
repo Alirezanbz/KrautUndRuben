@@ -9,9 +9,9 @@ public class MariaDBConnection {
 
         Connection connection = null;
 
-        String jdbcURL = "jdbc:mariadb://localhost:3306/kraut_und_ruben_db";
+        String jdbcURL = "jdbc:mariadb://localhost:3306/kraut_und_rueben";
         String username = "root";
-        String password = "Zenbook12";
+        String password = "";
 
         try {
             connection = DriverManager.getConnection(jdbcURL, username, password);

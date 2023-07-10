@@ -5,13 +5,10 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class HomePageFrame extends HomePageStatements {
-
 
     public void openHomePage() {
         final JFrame frame = new JFrame("Home Page");
@@ -26,7 +23,7 @@ public class HomePageFrame extends HomePageStatements {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
         topPanel.setBackground(new Color(79, 94, 92));
-        gbc.weighty = 0.1;
+        gbc.weighty = 0.1; // Top panel doesn't need as much space
         frame.add(topPanel, gbc);
 
         JLabel filterTitle = new JLabel("Beschränkung:");
@@ -34,7 +31,7 @@ public class HomePageFrame extends HomePageStatements {
         filterTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
         topPanel.add(filterTitle, BorderLayout.NORTH);
 
-        String[] columnNames = {"Name", "Kategorie", "Preis", "Nr"};
+        String[] columnNames = {"Name", "Kategorie", "Preis"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -64,7 +61,6 @@ public class HomePageFrame extends HomePageStatements {
         header.setBackground(new Color(79, 94, 92));
         header.setForeground(new Color(197, 235, 230));
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
 
         JScrollPane scrollPane = new JScrollPane(RezeptsTable);
         scrollPane.setPreferredSize(new Dimension(460, 400));
@@ -104,7 +100,7 @@ public class HomePageFrame extends HomePageStatements {
         tableTitlePanel.add(tableTitel);
 
         gbc.gridy = 1;
-        gbc.weighty = 0.1; // Title panel doesn't need as much space
+        gbc.weighty = 0.1;
         frame.add(tableTitlePanel, gbc);
 
         String[] zColumnNames = {"Name", "Menge", "Preis"};
@@ -116,20 +112,19 @@ public class HomePageFrame extends HomePageStatements {
             }
         };
 
-
         RezeptsTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 JTable target = (JTable) e.getSource();
                 int row = target.getSelectedRow();
 
                 if (e.getClickCount() == 2) {
-                    String rezeptName = (String) target.getValueAt(row, 0);
+                    String rezeptName = (String) target.getValueAt(row, 3);
                     RezeptDetailsPageFrame rezeptDetailsPageFrame = new RezeptDetailsPageFrame();
                     rezeptDetailsPageFrame.openRezeptDetailsFrame(rezeptName);
 
-                    }
+                }
                 ArrayList<ArrayList<String>> zRecords = selectStringQuery("bezeichnung,menge,sum(preis*menge),kalorien", "rezept_zutat", "LEFT JOIN zutat ON zutat.zutatNr = rezept_zutat.zutatNr\n" +
-                        "WHERE RezeptNr = '" + (String) target.getValueAt(row, 3) + "'\n" +
+                        "WHERE RezeptNr = '" + (String) target.getValueAt(row, 0) + "'\n" +
                         "GROUP BY zutat.ZutatNr");
 
                 System.out.println(zRecords);
@@ -143,9 +138,6 @@ public class HomePageFrame extends HomePageStatements {
                 }
             }
         });
-
-
-
 
         RezeptsTable.setBackground(new Color(79, 94, 92));
         RezeptsTable.setForeground(new Color(197, 235, 230));
@@ -162,19 +154,19 @@ public class HomePageFrame extends HomePageStatements {
         JTableHeader zHeader = ZutatenTable.getTableHeader();
         zHeader.setBackground(new Color(79, 94, 92));
         zHeader.setForeground(new Color(197, 235, 230));
-        zHeader.setFont(new Font("Segoe UI" , Font.BOLD, 14));
+        zHeader.setFont(new Font("Segoe UI", Font.BOLD, 14));
 
         JScrollPane zScrollPane = new JScrollPane(ZutatenTable);
-        zScrollPane.setBounds(500, 150, 460, 400);
-        zScrollPane.setBackground(new Color(79, 94, 92));
+        zScrollPane.setPreferredSize(new Dimension(460, 400));
+        zScrollPane.getViewport().setBackground(new Color(79, 94, 92));
 
         ZutatenTable.setBackground(new Color(79, 94, 92));
         ZutatenTable.setForeground(new Color(197, 235, 230));
-        ZutatenTable.setFont(new Font("Segoe UI" , Font.PLAIN, 13));
+        ZutatenTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 
-        frame.add(RezeptsTable, gbc);
-        frame.add(scrollPane, gbc);
+        gbc.gridy = 3;
         frame.add(zScrollPane, gbc);
+
         frame.setSize(1200,700);
         frame.getContentPane().setBackground(new Color(79, 94, 92));
         frame.setLocationRelativeTo(null);
@@ -182,7 +174,5 @@ public class HomePageFrame extends HomePageStatements {
         frame.setVisible(true);
 
         frame.pack();
-        }
-
     }
-
+}

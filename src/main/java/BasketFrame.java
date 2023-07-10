@@ -9,7 +9,6 @@ public class BasketFrame extends JFrame {
 
     private Queries queries = new Queries();
     private JButton orderButton;
-    private JButton removeButton;
     private JTable basketTable;
     private DefaultTableModel tableModel;
 
@@ -32,7 +31,6 @@ public class BasketFrame extends JFrame {
         }
 
         orderButton = new JButton("Bestellen");
-        removeButton = new JButton("Artikel Entwerfen");
 
         setLayout(new BorderLayout());
 
@@ -41,7 +39,6 @@ public class BasketFrame extends JFrame {
         // Create a panel for the buttons and add it to the frame
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(orderButton);
-        buttonPanel.add(removeButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
         // Add action listeners to the buttons

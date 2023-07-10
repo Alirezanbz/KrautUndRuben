@@ -26,7 +26,7 @@ public class HomePageFrame extends HomePageStatements {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
         topPanel.setBackground(new Color(79, 94, 92));
-        gbc.weighty = 0.1; // Top panel doesn't need as much space
+        gbc.weighty = 0.1;
         frame.add(topPanel, gbc);
 
         JLabel filterTitle = new JLabel("Beschränkung:");
@@ -119,34 +119,33 @@ public class HomePageFrame extends HomePageStatements {
 
         RezeptsTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    JTable target = (JTable) e.getSource();
-                    int row = target.getSelectedRow();
-                    String rezeptName = (String) target.getValueAt(row, 0);
                 JTable target = (JTable) e.getSource();
-                int row = target.getSelectedRow(); // get the selected row
-                if (e.getClickCount() == 2) { // Detect double click events
-                    String rezeptName = (String) target.getValueAt(row, 0); // get the Rezept name from the selected row
+                int row = target.getSelectedRow();
 
+                if (e.getClickCount() == 2) {
+                    String rezeptName = (String) target.getValueAt(row, 0);
                     RezeptDetailsPageFrame rezeptDetailsPageFrame = new RezeptDetailsPageFrame();
                     rezeptDetailsPageFrame.openRezeptDetailsFrame(rezeptName);
-                }
 
-                ArrayList<ArrayList<String>> zRecords = selectStringQuery("bezeichnung,menge,sum(preis*menge),kalorien", "rezept_zutat", "LEFT JOIN zutat ON zutat.zutatNr = rezept_zutat.zutatNr\n" +
-                        "WHERE RezeptNr = '" + (String) target.getValueAt(row, 3) + "'\n" +
-                        "GROUP BY zutat.ZutatNr");
+                    ArrayList<ArrayList<String>> zRecords = selectStringQuery("bezeichnung,menge,sum(preis*menge),kalorien", "rezept_zutat", "LEFT JOIN zutat ON zutat.zutatNr = rezept_zutat.zutatNr\n" +
+                            "WHERE RezeptNr = '" + (String) target.getValueAt(row, 3) + "'\n" +
+                            "GROUP BY zutat.ZutatNr");
 
-                System.out.println(zRecords);
-                while(zModel.getRowCount()>0) zModel.removeRow(0);
-                String name = "",menge="",preis = "";
-                for (ArrayList<String> record : zRecords) {
-                    name = record.get(0);
-                    menge = record.get(1);
-                    preis = record.get(2);
-                    zModel.addRow(new Object[]{name,menge,preis});
+                    System.out.println(zRecords);
+                    while(zModel.getRowCount()>0) zModel.removeRow(0);
+                    String name = "",menge="",preis = "";
+                    for (ArrayList<String> record : zRecords) {
+                        name = record.get(0);
+                        menge = record.get(1);
+                        preis = record.get(2);
+                        zModel.addRow(new Object[]{name,menge,preis});
+                    }
                 }
             }
         });
+
+
+
 
         RezeptsTable.setBackground(new Color(79, 94, 92));
         RezeptsTable.setForeground(new Color(197, 235, 230));
@@ -178,7 +177,7 @@ public class HomePageFrame extends HomePageStatements {
         ZutatenTable.setForeground(new Color(197, 235, 230));
         ZutatenTable.setFont(new Font("Segoe UI" , Font.PLAIN, 13));
 
-        frame.add(transactionsLabel);
+        frame.add(RezeptsTable);
         frame.add(scrollPane);
         frame.add(zScrollPane);
         frame.setSize(1200,700);
@@ -186,6 +185,7 @@ public class HomePageFrame extends HomePageStatements {
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+        }
+
     }
 
-}

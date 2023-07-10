@@ -10,7 +10,7 @@ public class HomePageStatements extends Queries {
 
 
     protected List<String[]> getRezepts() {
-        ArrayList<String> rezepts = selectStringQuery("rezeptname", "rezept", "");
+        ArrayList<String> rezepts = selectStringQuerySingle("rezeptname", "rezept", "");
         List<String[]> rowList = new ArrayList<>();
 
         for (int i = 0; i < rezepts.size(); i++) {
@@ -38,7 +38,7 @@ public class HomePageStatements extends Queries {
         return kategories;
     }
     protected List<String> getBeschraenkungs() {
-        return selectStringQuery("beschraenkungsname", "beschraenkung", "");
+        return selectStringQuerySingle("beschraenkungsname", "beschraenkung", "");
     }
 
     protected boolean isRecipeRestricted(String recipe, String beschraenkung) {

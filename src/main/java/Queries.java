@@ -1,14 +1,11 @@
-import javax.swing.plaf.nimbus.State;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Queries extends MariaDBConnection {
+public class Queries extends MySQLConnection {
 
     public ArrayList<ArrayList<String>> selectStringQuery(String columns, String table, String whereClause) {
 
@@ -48,6 +45,40 @@ public class Queries extends MariaDBConnection {
 
         return result;
     }
+    public ArrayList<String> selectStringQuerySingle(String columns, String table, String whereClause) {
+
+        ArrayList<String> result = new ArrayList<>();
+
+        String[] columnsArray = columns.split(",");
+
+        String selectQuery = "SELECT " + columns + " FROM " + table + " ";
+
+        try{
+
+            if (whereClause != null) {
+                selectQuery += " " + whereClause;
+            }
+
+            selectQuery += ";";
+            System.out.println(selectQuery);
+
+            Statement selectStatement = connection.createStatement();
+            ResultSet selectResult = selectStatement.executeQuery(selectQuery);
+
+            while (selectResult.next()){
+                result.add(selectResult.getString(columnsArray[0]));
+            }
+
+            selectStatement.close();
+            selectResult.close();
+
+        } catch (Exception exception){
+            System.err.println("Couldn't run SELECT query: " + exception.getMessage());
+        }
+
+        return result;
+    }
+
 
     public ArrayList<Integer> selectIntegerQuery(String columns, String table, String whereClause) {
 
@@ -105,8 +136,8 @@ public class Queries extends MariaDBConnection {
     }
      */
 
-    public ArrayList<ArrayList<String>> getRezeptNachZutat(int zutatNr) {
-        return selectStringQuery(
+    public ArrayList<String> getRezeptNachZutat(int zutatNr) {
+        return selectStringQuerySingle(
                 "rezeptname",
                 "rezept",
                 "JOIN rezept_zutat rz on rezept.RezeptNr = rz.RezeptNr WHERE zutatNr = " + zutatNr);
@@ -157,7 +188,16 @@ public class Queries extends MariaDBConnection {
         rezept_Bestellung(getLatestBestellungNr(kdNr), basket.rezepte);
         zutat_Bestellung(getLatestBestellungNr(kdNr), basket.zutaten);
     }
+    public String getKategorieNachRezept(int rezeptNr) {
+        ArrayList<String> categories = selectStringQuerySingle(
+                "kategoriename",
+                "ernaehrungskategorie",
+                "JOIN rezept_kategorie rk on rk.KatNr = ernaehrungskategorie.KatNr WHERE RezeptNr = " + rezeptNr
+        );
 
+        // Using Java 8 String.join() method to join categories into a single String
+        return String.join(", ", categories);
+    }
     private void rezept_Bestellung(int latestBestellungNr, ArrayList<ArrayList<Integer>> rezepte) {
 
         for (ArrayList<Integer> rezept : rezepte) {

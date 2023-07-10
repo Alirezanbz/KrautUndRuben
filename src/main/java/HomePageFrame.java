@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.Set;
 
 public class HomePageFrame extends HomePageStatements {
+    private String kdnr;
+
+    public HomePageFrame(String kdnr) {
+        this.kdnr = kdnr;
+    }
 
     public void openHomePage() {
         final JFrame frame = new JFrame("Home Page");

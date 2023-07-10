@@ -5,12 +5,9 @@ public class Main {
     public static void main(String[] args) {
 
 
-        HomePageFrame homePageFrame = new HomePageFrame();
-        homePageFrame.openHomePage();
-        HomePageStatements homePageStatements = new HomePageStatements();
-        System.out.println(homePageStatements.getKategories());
-        System.out.println();
 
+        LoginPage loginPage = new LoginPage();
+        loginPage.setVisible(true);
 
         //System.out.println(queries.selectQuery("nachname", "kunden", "where kunden.kdnr = 1001"));
         Queries queries = new Queries();

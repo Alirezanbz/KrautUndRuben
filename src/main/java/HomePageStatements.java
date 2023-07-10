@@ -10,9 +10,10 @@ public class HomePageStatements extends Queries {
 
 
     protected List<String[]> getRezepts() {
-        ArrayList<String> rezepts = selectStringQuerySingle("rezeptname", "rezept", "");
-        List<String[]> rowList = new ArrayList<>();
 
+        //ArrayList<String> rezepts = selectStringQuerySingle("rezeptname", "rezept", "");
+        List<String[]> rowList = new ArrayList<>();
+        /*
         for (int i = 0; i < rezepts.size(); i++) {
             String[] row = new String[3];
             row[0] = rezepts.get(i);
@@ -20,6 +21,23 @@ public class HomePageStatements extends Queries {
             row[2] = "";
             rowList.add(row);
         }
+        */
+
+        ArrayList<ArrayList<String>> rezepts = selectStringQuery("rezeptname,kategoriename,sum(preis*menge),rezept.RezeptNr", "rezept", "LEFT JOIN rezept_kategorie ON rezept.RezeptNr = rezept_kategorie.RezeptNr\n" +
+                "LEFT JOIN ernaehrungskategorie ON rezept_kategorie.KatNr = ernaehrungskategorie.KatNr\n" +
+                "LEFT JOIN rezept_zutat ON rezept.RezeptNr = rezept_zutat.RezeptNr\n" +
+                "LEFT JOIN zutat ON rezept_zutat.zutatNr = zutat.zutatNr\n" +
+                "GROUP BY rezept.RezeptNr");
+
+        for (ArrayList<String> rezept : rezepts) {
+            String[] row = new String[4];
+            row[0] = rezept.get(0);
+            row[1] = getKategorieNachRezept(Integer.parseInt(rezept.get(3)));
+            row[2] = rezept.get(2);
+            row[3] = rezept.get(3);
+            rowList.add(row);
+        }
+
         return rowList;
     }
 

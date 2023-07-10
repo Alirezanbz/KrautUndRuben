@@ -50,7 +50,7 @@ public class HomePageFrame extends HomePageStatements {
                 return false;
             }
         };
-
+        /*
         ArrayList<ArrayList<String>> records = selectStringQuery("rezeptname,kategoriename,sum(preis*menge),rezept.RezeptNr", "rezept", "LEFT JOIN rezept_kategorie ON rezept.RezeptNr = rezept_kategorie.RezeptNr\n" +
                 "LEFT JOIN ernaehrungskategorie ON rezept_kategorie.KatNr = ernaehrungskategorie.KatNr\n" +
                 "LEFT JOIN rezept_zutat ON rezept.RezeptNr = rezept_zutat.RezeptNr\n" +
@@ -67,6 +67,7 @@ public class HomePageFrame extends HomePageStatements {
             nr = record.get(3);
             model.addRow(new Object[]{name, kategorie, preis, nr});
         }
+         */
 
         JButton nextButton = new JButton("Weiter");
         NumberFormat format = NumberFormat.getInstance();
@@ -87,15 +88,18 @@ public class HomePageFrame extends HomePageStatements {
         JScrollPane scrollPane = new JScrollPane(RezeptsTable);
         scrollPane.setPreferredSize(new Dimension(460, 400));
         scrollPane.getViewport().setBackground(new Color(79, 94, 92));
-        /*
+
         List<String[]> rows = getRezepts();
-        ArrayList<String> kategories = getKategories();
+        System.out.println(rows);
+
+        //ArrayList<String> kategories = getKategories();
         for (int i = 0; i < rows.size(); i++) {
             String[] row = rows.get(i);
-            row[1] = kategories.get(i);
+            //row[1] = kategories.get(i);
             model.addRow(row);
         }
-         */
+
+
         JPanel checkBoxPanel = new JPanel();
         checkBoxPanel.setLayout(new GridLayout(2, 3));
         checkBoxPanel.setBackground(new Color(79, 94, 92));
@@ -110,7 +114,7 @@ public class HomePageFrame extends HomePageStatements {
                 } else {
                     currentFilters.remove(constraint);
                 }
-                //updateTable(model);
+                updateTable(model);
             });
             checkBoxPanel.add(checkBox);
         }
@@ -172,7 +176,7 @@ public class HomePageFrame extends HomePageStatements {
 
                 }
                 ArrayList<ArrayList<String>> zRecords = selectStringQuery("bezeichnung,menge,sum(preis*menge),kalorien", "rezept_zutat", "LEFT JOIN zutat ON zutat.zutatNr = rezept_zutat.zutatNr\n" +
-                        "WHERE RezeptNr = '" + (String) target.getValueAt(row, 0) + "'\n" +
+                        "WHERE RezeptNr = '" + (String) target.getValueAt(row, 3) + "'\n" +
                         "GROUP BY zutat.ZutatNr");
 
                 System.out.println(zRecords);
@@ -246,7 +250,7 @@ public class HomePageFrame extends HomePageStatements {
         frame.add(zScrollPane, gbc);
         gbc.gridy = 3;
         frame.add(nextButton, gbc);
-        gbc.gridy = 1;
+        gbc.gridx = 0;
         frame.add(mengeField, gbc);
 
         frame.setSize(1200, 700);

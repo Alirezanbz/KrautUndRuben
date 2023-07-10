@@ -3,8 +3,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +20,7 @@ public class HomePageFrame extends HomePageStatements {
     }
 
     public void openHomePage() {
+        Basket basket = new Basket();
         final JFrame frame = new JFrame("Home Page");
         frame.setLayout(new GridBagLayout());
         frame.getContentPane().setBackground(new Color(79, 94, 92));
@@ -38,7 +41,7 @@ public class HomePageFrame extends HomePageStatements {
         filterTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
         topPanel.add(filterTitle, BorderLayout.NORTH);
 
-        String[] columnNames = {"Name", "Kategorie", "Preis"};
+        String[] columnNames = new String[]{"Name", "Kategorie", "Preis", "Rezept Nummer"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -63,6 +66,16 @@ public class HomePageFrame extends HomePageStatements {
             model.addRow(new Object[]{name,kategorie,preis,nr});
         }
 
+        JButton nextButton = new JButton("Weiter");
+        NumberFormat format = NumberFormat.getInstance();
+        NumberFormatter formatter = new NumberFormatter(format);
+        formatter.setValueClass(Integer.class);
+        formatter.setMinimum(1);
+        formatter.setMaximum(Integer.MAX_VALUE);
+        formatter.setAllowsInvalid(false);
+        formatter.setCommitsOnValidEdit(true);
+        JFormattedTextField mengeField = new JFormattedTextField(formatter);
+        mengeField.setValue(1);
         JTable RezeptsTable = new JTable(model);
         JTableHeader header = RezeptsTable.getTableHeader();
         header.setBackground(new Color(79, 94, 92));
@@ -72,6 +85,7 @@ public class HomePageFrame extends HomePageStatements {
         JScrollPane scrollPane = new JScrollPane(RezeptsTable);
         scrollPane.setPreferredSize(new Dimension(460, 400));
         scrollPane.getViewport().setBackground(new Color(79, 94, 92));
+        /*
         List<String[]> rows = getRezepts();
         ArrayList<String> kategories = getKategories();
         for (int i = 0; i < rows.size(); i++) {
@@ -79,6 +93,7 @@ public class HomePageFrame extends HomePageStatements {
             row[1] = kategories.get(i);
             model.addRow(row);
         }
+         */
         JPanel checkBoxPanel = new JPanel();
         checkBoxPanel.setLayout(new GridLayout(2, 3));
         checkBoxPanel.setBackground(new Color(79, 94, 92));
@@ -93,7 +108,7 @@ public class HomePageFrame extends HomePageStatements {
                 } else {
                     currentFilters.remove(constraint);
                 }
-                updateTable(model);
+                //updateTable(model);
             });
             checkBoxPanel.add(checkBox);
         }
@@ -150,7 +165,8 @@ public class HomePageFrame extends HomePageStatements {
                 if (e.getClickCount() == 2) {
                     String rezeptName = (String) target.getValueAt(row, 3);
                     RezeptDetailsPageFrame rezeptDetailsPageFrame = new RezeptDetailsPageFrame();
-                    rezeptDetailsPageFrame.openRezeptDetailsFrame(rezeptName);
+                    //rezeptDetailsPageFrame.openRezeptDetailsFrame(rezeptName);
+                    basket.addRezeptToBasket(Integer.parseInt((String)target.getValueAt(row, 3)), (Integer) mengeField.getValue());
 
                 }
                 ArrayList<ArrayList<String>> zRecords = selectStringQuery("bezeichnung,menge,sum(preis*menge),kalorien", "rezept_zutat", "LEFT JOIN zutat ON zutat.zutatNr = rezept_zutat.zutatNr\n" +
@@ -166,6 +182,12 @@ public class HomePageFrame extends HomePageStatements {
                     preis = record.get(2);
                     zModel.addRow(new Object[]{name,menge,preis});
                 }
+            }
+        });
+        nextButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                BasketFrame basketFrame = new BasketFrame(Integer.parseInt(kdnr), basket);
             }
         });
 
@@ -196,8 +218,13 @@ public class HomePageFrame extends HomePageStatements {
         ZutatenTable.setForeground(new Color(197, 235, 230));
         ZutatenTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 
-        gbc.gridy = 3;
+        gbc.gridy = 2;
+        gbc.gridx = 1;
         frame.add(zScrollPane, gbc);
+        gbc.gridy = 3;
+        frame.add(nextButton, gbc);
+        gbc.gridy = 1;
+        frame.add(mengeField, gbc);
 
         frame.setSize(1200,700);
         frame.getContentPane().setBackground(new Color(79, 94, 92));

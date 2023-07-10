@@ -164,6 +164,8 @@ public class HomePageFrame extends HomePageStatements {
             }
         });
 
+
+
         RezeptsTable.setBackground(new Color(79, 94, 92));
         RezeptsTable.setForeground(new Color(197, 235, 230));
         RezeptsTable.setFont(new Font("Segoe UI", Font.PLAIN, 13));
@@ -200,4 +202,7 @@ public class HomePageFrame extends HomePageStatements {
 
         frame.pack();
     }
+
+
+
 }

@@ -74,8 +74,9 @@ public class HomePageStatements extends Queries {
                 model.addRow(row);
             }
         }
-    }
 
+
+    }
 
 
 }

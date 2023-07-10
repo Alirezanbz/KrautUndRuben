@@ -127,19 +127,19 @@ public class HomePageFrame extends HomePageStatements {
                     RezeptDetailsPageFrame rezeptDetailsPageFrame = new RezeptDetailsPageFrame();
                     rezeptDetailsPageFrame.openRezeptDetailsFrame(rezeptName);
 
-                    ArrayList<ArrayList<String>> zRecords = selectStringQuery("bezeichnung,menge,sum(preis*menge),kalorien", "rezept_zutat", "LEFT JOIN zutat ON zutat.zutatNr = rezept_zutat.zutatNr\n" +
-                            "WHERE RezeptNr = '" + (String) target.getValueAt(row, 3) + "'\n" +
-                            "GROUP BY zutat.ZutatNr");
-
-                    System.out.println(zRecords);
-                    while(zModel.getRowCount()>0) zModel.removeRow(0);
-                    String name = "",menge="",preis = "";
-                    for (ArrayList<String> record : zRecords) {
-                        name = record.get(0);
-                        menge = record.get(1);
-                        preis = record.get(2);
-                        zModel.addRow(new Object[]{name,menge,preis});
                     }
+                ArrayList<ArrayList<String>> zRecords = selectStringQuery("bezeichnung,menge,sum(preis*menge),kalorien", "rezept_zutat", "LEFT JOIN zutat ON zutat.zutatNr = rezept_zutat.zutatNr\n" +
+                        "WHERE RezeptNr = '" + (String) target.getValueAt(row, 3) + "'\n" +
+                        "GROUP BY zutat.ZutatNr");
+
+                System.out.println(zRecords);
+                while(zModel.getRowCount()>0) zModel.removeRow(0);
+                String name = "",menge="",preis = "";
+                for (ArrayList<String> record : zRecords) {
+                    name = record.get(0);
+                    menge = record.get(1);
+                    preis = record.get(2);
+                    zModel.addRow(new Object[]{name,menge,preis});
                 }
             }
         });
@@ -157,11 +157,6 @@ public class HomePageFrame extends HomePageStatements {
         gbc.fill = GridBagConstraints.BOTH;
         frame.add(scrollPane, gbc);
 
-        frame.pack();
-
-
-
-
         JTable ZutatenTable = new JTable(zModel);
 
         JTableHeader zHeader = ZutatenTable.getTableHeader();
@@ -177,14 +172,16 @@ public class HomePageFrame extends HomePageStatements {
         ZutatenTable.setForeground(new Color(197, 235, 230));
         ZutatenTable.setFont(new Font("Segoe UI" , Font.PLAIN, 13));
 
-        frame.add(RezeptsTable);
-        frame.add(scrollPane);
-        frame.add(zScrollPane);
+        frame.add(RezeptsTable, gbc);
+        frame.add(scrollPane, gbc);
+        frame.add(zScrollPane, gbc);
         frame.setSize(1200,700);
         frame.getContentPane().setBackground(new Color(79, 94, 92));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        frame.pack();
         }
 
     }

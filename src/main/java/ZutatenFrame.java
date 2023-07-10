@@ -15,7 +15,12 @@ public class ZutatenFrame extends JFrame {
     public ZutatenFrame(Integer kdNr, Basket basket) {
         super("Zutaten");
 
-        tableModel = new DefaultTableModel(new Object[]{"Artikel"}, 0);
+        tableModel = new DefaultTableModel(new Object[]{"Artikel"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         zutatenTable = new JTable(tableModel);
 
         ArrayList<Integer> zutaten = queries.selectIntegerQuery("zutatNr", "zutat", null);
